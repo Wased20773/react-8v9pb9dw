@@ -10,7 +10,6 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import "../styles/chart.css";
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend, CategoryScale);
 
