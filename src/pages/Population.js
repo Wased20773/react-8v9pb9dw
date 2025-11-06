@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import Loading from "../components/Loading.js";
+import axios from "axios";
+import { Bar } from "react-chartjs-2";
+import "../styles/chart.css";
 import {
   Chart as ChartJS,
-  BarElement,
   CategoryScale,
   LinearScale,
+  BarElement,
+  Title,
   Tooltip,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import '../styles/chart.css'
+  Legend,
+} from "chart.js";
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-const Population = ({ countries }) => {
+const Population = () => {
+  const [countries, setCountries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get(
+          "https://restcountries.com/v3.1/subregion/South%20America"
+        );
+        setCountries(response.data);
+        setLoading(false);
+      } catch (e) {
+        console.warn(`Error fetching countries: ${e}`);
+      }
+    };
+    fetchCountries();
+  }, []);
+
   const sortedCountries = [...countries].sort(
     (a, b) => b.population - a.population
   );
@@ -22,13 +51,47 @@ const Population = ({ countries }) => {
     labels,
     datasets: [
       {
-        label: 'Population',
+        label: "Population",
         data: dataValues,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
     ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "Population per country in South America",
+        font: {
+          size: 24,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Countries",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Population",
+        },
+      },
+    },
   };
 
   return (
@@ -38,15 +101,16 @@ const Population = ({ countries }) => {
         Below is a bar chart showing the population of each country in South
         America
       </p>
-      <Bar data={barTable} className="bar-container"/>
-
-      {/* Dispay data raw */}
-      {/* {countries.map((country) => (
+      {loading ? <Loading /> : <Bar data={barTable} options={options} />}
+      <div>
+        {/* Dispay data raw */}
+        {/* {countries.map((country) => (
         <div>
           <div>{country.name.common}</div>
           <div>{country.population}</div>
         </div>
       ))} */}
+      </div>
     </div>
   );
 };

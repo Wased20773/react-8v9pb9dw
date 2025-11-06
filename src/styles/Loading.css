@@ -1,0 +1,21 @@
+.loader-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.loading-circle {
+  width: 80px;
+  height: 80px;
+
+  border: 5px solid white;
+  border-top: 5px solid rgb(50, 145, 200);
+  border-radius: 50%;
+
+  animation: spin 2s ease infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1080deg);
+  }
+}
